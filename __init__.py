@@ -68,17 +68,28 @@ class ReloadAddon(Operator):
             module.unregister()
         except Exception:
             import traceback
+            print("----------------------------------------------------------------------")
             traceback.print_exc()
-            self.report({'ERROR'}, "Reload Add-on: 'unregister()' threw an exception!" +
-                "Restart likely required.")
-
+            self.report({'ERROR'}, "Reload Add-on: 'unregister()' threw an exception! " +
+                "Restart may be required.")
+            print("----------------------------------------------------------------------")
+            
         # Reload and register the addon.
         print(f"Reloading: {package}")
         importlib.reload(module)
-        print(f"Registering: {package}")
-        module.register()
 
-        self.report({'INFO'}, f"Reloaded Add-on: {package}")
+        print(f"Registering: {package}")
+        try:
+            module.register()
+            self.report({'INFO'}, f"Reloaded Add-on: {package}")
+        except Exception:
+            import traceback
+            print("----------------------------------------------------------------------")
+            traceback.print_exc()
+            self.report({'ERROR'}, "Reload Add-on: 'register()' threw an exception! " +
+                "Restart may be required.")
+            print("----------------------------------------------------------------------")
+
         return {'FINISHED'}
 
 #
